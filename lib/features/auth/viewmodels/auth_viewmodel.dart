@@ -6,6 +6,8 @@ import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import '../../../app/router.dart';
 import '../../../core/providers/session_provider.dart';
 import '../../../core/supabase/supabase_client.dart';
+import '../services/auth_lookup_service.dart';
+import '../../../core/security/login_guard.dart';
 import '../models/auth_state.dart';
 
 final authViewModelProvider =
@@ -23,15 +25,22 @@ class AuthViewModel extends Notifier<AuthState> {
     state = state.copyWith(isLoading: true, clearError: true);
 
     try {
-      final email = emailFromDni(dni);
+      final lockMsg = await LoginGuard.lockMessage(dni);
+      if (lockMsg != null) {
+        throw Exception(lockMsg);
+      }
+
+      final email = await resolveEmailFromDni(dni);
       if (email == null) {
-        throw Exception('DNI no válido');
+        throw Exception('DNI no registrado en el sistema');
       }
 
       await supabase.auth.signInWithPassword(
         email: email,
         password: password,
       );
+
+      await LoginGuard.clear(dni);
 
       final userId = supabase.auth.currentUser?.id;
       if (userId == null) {
@@ -56,6 +65,7 @@ class AuthViewModel extends Notifier<AuthState> {
         context.go(AppRoute.home.path);
       }
     } on AuthException catch (e) {
+      await LoginGuard.recordFailure(dni);
       state = state.copyWith(
         isLoading: false,
         errorMessage: e.message,
@@ -65,6 +75,9 @@ class AuthViewModel extends Notifier<AuthState> {
       }
     } catch (e) {
       final message = e.toString().replaceFirst('Exception: ', '');
+      if (!message.contains('Reintente')) {
+        await LoginGuard.recordFailure(dni);
+      }
       state = state.copyWith(isLoading: false, errorMessage: message);
       if (context.mounted) {
         _showError(context, message);

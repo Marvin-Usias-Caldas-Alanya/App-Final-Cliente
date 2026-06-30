@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../app/router.dart';
 import '../../../core/providers/session_provider.dart';
 import '../../../core/supabase/supabase_client.dart';
 import '../../../core/theme/app_colors.dart';
@@ -61,7 +63,19 @@ class _SolicitudesClienteViewState extends ConsumerState<SolicitudesClienteView>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Solicitudes')),
+      appBar: AppBar(
+        title: const Text('Solicitudes'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            tooltip: 'Nueva solicitud',
+            onPressed: () async {
+              await context.push(AppRoute.nuevaSolicitud.path);
+              if (mounted) _loadSolicitudes();
+            },
+          ),
+        ],
+      ),
       body: _loading
           ? const LoadingView()
           : _solicitudes.isEmpty

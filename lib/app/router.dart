@@ -7,6 +7,7 @@ import '../features/creditos/views/mis_creditos_view.dart';
 import '../features/home/views/home_view.dart';
 import '../features/movimientos/views/movimientos_view.dart';
 import '../features/perfil/views/perfil_view.dart';
+import '../features/solicitudes/views/nueva_solicitud_view.dart';
 import '../features/solicitudes/views/solicitudes_cliente_view.dart';
 import '../features/splash/views/splash_view.dart';
 
@@ -18,6 +19,7 @@ enum AppRoute {
   detalleCredito('/credito/:creditoId'),
   movimientos('/movimientos'),
   solicitudes('/solicitudes'),
+  nuevaSolicitud('/solicitudes/nueva'),
   perfil('/perfil');
 
   const AppRoute(this.path);
@@ -58,6 +60,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoute.solicitudes.path,
         builder: (context, state) => const SolicitudesClienteView(),
+      ),
+      GoRoute(
+        path: AppRoute.nuevaSolicitud.path,
+        builder: (context, state) => const NuevaSolicitudView(),
       ),
       GoRoute(
         path: AppRoute.perfil.path,

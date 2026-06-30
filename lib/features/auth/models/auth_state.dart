@@ -30,6 +30,9 @@ String? emailFromDni(String dni) {
     case '71234567':
       return 'cliente002@confianza.local';
     default:
+      if (dni.trim().length >= 8) {
+        return '${dni.trim()}@confianza.local';
+      }
       return null;
   }
 }

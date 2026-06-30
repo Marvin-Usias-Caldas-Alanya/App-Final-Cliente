@@ -182,6 +182,12 @@ class HomeView extends ConsumerWidget {
                         onTap: () => context.push(AppRoute.creditos.path),
                       ),
                       AppActionCard(
+                        title: 'Nueva solicitud',
+                        icon: Icons.add_circle_outline,
+                        color: AppColors.primaryBlue,
+                        onTap: () => context.push(AppRoute.nuevaSolicitud.path),
+                      ),
+                      AppActionCard(
                         title: 'Solicitudes',
                         icon: Icons.assignment_outlined,
                         color: AppColors.secondaryBlue,
